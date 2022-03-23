@@ -4,7 +4,8 @@
 from sys import argv, exit
 
 from Crypto.Cipher import AES
-from Crypto.Protocol.KDF import PBKDF2
+from Crypto.Protocol.KDF import scrypt
+from Crypto.Random import get_random_bytes
 
 def error(x):
     print(x)
@@ -15,11 +16,14 @@ data = {}
 def save():
     as_list = [i.encode('utf-8') for i in list(data.keys()) + list(data.values())]
     bytes = b'\0'.join(as_list)
-
+    
+    salt = get_random_bytes(16)
+    key = scrypt(passphrase, salt, 16, N=2**14, r=8, p=1)
     cipher = AES.new(key, AES.MODE_EAX)
     ciphertext, tag = cipher.encrypt_and_digest(bytes)
     
     with open("data.bin", "wb") as f:
+        f.write(salt)
         f.write(cipher.nonce)
         f.write(tag)
         f.write(ciphertext)
@@ -27,6 +31,7 @@ def save():
 def load():
     try:
         with open("data.bin", "rb") as f:
+            salt = f.read(16)
             nonce = f.read(16)
             tag = f.read(16)
             ciphertext = f.read()
@@ -34,6 +39,7 @@ def load():
     except FileNotFoundError:
         error("Password manager not initialized.")
 
+    key = scrypt(passphrase, salt, 16, N=2**14, r=8, p=1)
     cipher = AES.new(key, AES.MODE_EAX, nonce)
 
     try:
@@ -99,10 +105,9 @@ except IndexError:
     error("No action specified.")
 
 try:
-    key = argv[2]
+    passphrase = argv[2]
 
 except IndexError:
     error("No master password specified.")
 
-key = PBKDF2(key, "fer-srs", dkLen = 32)
 action(argv[3:])
