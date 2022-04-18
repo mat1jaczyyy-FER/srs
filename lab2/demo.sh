@@ -17,22 +17,28 @@ echo
 echo "# FER SRS Lab2 demonstration"
 echo
 exec rm -rf data.bin
-exec $python3 usermgmt.py add sgros --test <<< $'test\ntesz\n'
+exec $python3 usermgmt.py add sgros --test <<< $'testtesttest\ntesztesttest'
 echo
-exec $python3 usermgmt.py add sgros --test <<< $'test\ntest\n'
+exec $python3 usermgmt.py add sgros --test <<< $'testtesttest\ntesttesttest'
 echo
-exec $python3 login.py sgros --test <<< $'test\n'
+exec $python3 login.py sgros --test <<< $'testtesttest'
 echo
-exec $python3 usermgmt.py passwd sgros --test <<< $'sifra\nsifrq\n'
+exec $python3 usermgmt.py passwd sgros --test <<< $'sifrasifra\nsifrqsifra'
 echo
-exec $python3 usermgmt.py passwd sgros --test <<< $'sifra\nsifra\n'
+exec $python3 usermgmt.py passwd sgros --test <<< $'sifrasifra\nsifrasifra'
 echo
-exec $python3 login.py sgros --test <<< $'sifra\n'
+exec $python3 login.py sgros --test <<< $'testtesttest\nsifrasifra'
 echo
 exec $python3 usermgmt.py forcepass sgros --test
 echo
-exec $python3 login.py sgros --test <<< $'sifra\nnova\nnova\n'
+exec $python3 login.py sgros --test <<< $'sifrasifra\nnovasifra'
+echo
+exec $python3 login.py sgros --test <<< $'sifrasifra\nnovaasifra\nnovqqsifra'
+echo
+exec $python3 login.py sgros --test <<< $'sifrasifra\nnovaasifra\nnovaasifra'
+echo
+exec $python3 login.py sgros --test <<< $'novaasifra'
 echo
 exec $python3 usermgmt.py del sgros --test
 echo
-exec $python3 login.py sgros --test
+exec $python3 login.py sgros --test <<< $'novaasifra\nsifrasifra\ntesttesttest'

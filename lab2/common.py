@@ -33,7 +33,7 @@ def load():
         save()
 
 def tokey(password, salt):
-    return scrypt(password, salt, 16, N=2**14, r=8, p=1)
+    return scrypt(password, salt, 16, N=2**15, r=8, p=1)
 
 def set(username, password):
     salt = get_random_bytes(16)
@@ -42,14 +42,23 @@ def set(username, password):
     data[username] = [salt, key, b'\x00']
 
 def getpass_test(prompt):
-    password = input(prompt)
+    try:
+        password = input(prompt)
+    except EOFError:
+        exit(0)
+        
     print(password)
     return password
 
 getpass_impl = getpass_test if "--test" in argv else getpass
 
 def getpass_repeat(prompt, error_msg):
-    password, repeat = getpass_impl(f"{prompt}: "), getpass_impl(f"Repeat {prompt}: ")
+    password = getpass_impl(f"{prompt}: ")
+    
+    if len(password) < 10:
+        error(f"{error_msg}. Password should be at least 10 characters.")
+
+    repeat = getpass_impl(f"Repeat {prompt}: ")
 
     if password != repeat:
         error(f"{error_msg}. Password mismatch.")

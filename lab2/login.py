@@ -11,24 +11,29 @@ except IndexError:
 
 load()
 
-if username not in data:
-    error("User does not exist.")
-
 while True:
     password = getpass_impl("Password: ")
-    key = tokey(password, data[username][0])
 
-    if key == data[username][1]:
-        break
+    if username in data:
+        key = tokey(password, data[username][0])
+        
+        if key == data[username][1]:
+            break
 
     print("Username or password incorrect.")
 
 if data[username][2] == b'\x01':
     print("Password change was requested.")
 
-    password = getpass_repeat("New Password", "Password change failed")
+    while True:
+        new_password = getpass_repeat("New Password", "Password change failed")
 
-    set(username, password)
+        if password != new_password:
+            break
+    
+        print("Passwords must be different.")
+
+    set(username, new_password)
     save()
     
     print("Password change successful.")
