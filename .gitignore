@@ -115,3 +115,6 @@ dmypy.json
 
 # SRS data
 data.bin
+
+# Lab4 zip
+lab4/FW.zip
